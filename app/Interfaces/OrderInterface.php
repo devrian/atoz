@@ -8,6 +8,8 @@ interface OrderInterface {
 
     public function findAll(Request $request);
 
+    public function findAllUnpaid();
+
     public function findAllUnpaidByUserId($userId);
 
     public function findByIdAndUserId($id, $userId);
@@ -23,4 +25,6 @@ interface OrderInterface {
     public function save(array $request);
 
     public function update(array $request);
+
+    public function cancelOrder($orderId, $userId);
 }

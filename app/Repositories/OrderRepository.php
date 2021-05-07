@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Interfaces\OrderInterface;
 use App\Models\Order;
+use App\Models\PrepaidBalance;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -50,6 +52,14 @@ class OrderRepository implements OrderInterface
         if (!is_null($request->paginate)) $result = $query->paginate($request->paginate);
         else $result = $query->get();
 
+        if (is_null($result)) return;
+
+        return $result;
+    }
+
+    public function findAllUnpaid()
+    {
+        $result = Order::where('order_status', Order::STATUS_NEW)->get();
         if (is_null($result)) return;
 
         return $result;
@@ -147,5 +157,30 @@ class OrderRepository implements OrderInterface
         $result->update($request);
 
         return $result;
+    }
+
+    public function cancelOrder($orderId, $userId)
+    {
+        $orderUpdated = $this->findUnpaidByIdAndUserId($orderId, $userId);
+        if (is_null($orderUpdated)) abort(400, 'Order not found.');
+
+        $transactionDeleted = $orderUpdated->model_type == Product::class
+            ? Product::find($orderUpdated->transaction_id)
+            : PrepaidBalance::find($orderUpdated->transaction_id);
+
+        if (is_null($transactionDeleted)) abort(400, 'Delete transaction failed.');
+        $transactionDeleted->delete();
+
+        $requestPayment = [
+            'id' => $orderUpdated->order_id,
+            'user_id' => $userId,
+            'order_status' => Order::STATUS_CANCEL
+        ];
+
+        $cancelOrder = $this->update($requestPayment);
+        if (is_null($cancelOrder)) abort(400, 'Payment Order failed.');
+        $cancelOrder->delete();
+
+        return $cancelOrder;
     }
 }

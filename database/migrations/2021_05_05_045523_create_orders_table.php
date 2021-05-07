@@ -22,6 +22,7 @@ class CreateOrdersTable extends Migration
             $table->tinyInteger('order_status')->default(1)->comment('1 = New, 2 = Success, 3 = Fail, 4 = Cancel');
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
+            $table->dateTime('expired_at', 0);
             $table->softDeletes('deleted_at');
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
