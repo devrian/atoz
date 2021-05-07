@@ -84,26 +84,8 @@ class OrderService {
         return $paymentOrder;
     }
 
-    public function storingCancelOrder(CancelOrderRequest $request)
+    public function storingCancelOrder($orderId, $userId)
     {
-        $orderUpdated = $this->orderInterface->findUnpaidByIdAndUserId($request->order_id, $request->user_id);
-        if (is_null($orderUpdated)) abort(400, 'Order not found.');
-
-        $transactionDeleted = $orderUpdated->model_type == Product::class
-            ? $this->productInterface->delete($orderUpdated->transaction_id)
-            : $this->prepaidBalanceInterface->delete($orderUpdated->transaction_id);
-        if (is_null($transactionDeleted)) abort(400, 'Delete transaction failed.');
-
-        $requestPayment = [
-            'id' => $orderUpdated->order_id,
-            'user_id' => $request->user_id,
-            'order_status' => Order::STATUS_CANCEL
-        ];
-
-        $cancelOrder = $this->orderInterface->update($requestPayment);
-        if (is_null($cancelOrder)) abort(400, 'Payment Order failed.');
-        $cancelOrder->delete();
-
-        return $cancelOrder;
+        return $this->orderInterface->cancelOrder($orderId, $userId);
     }
 }

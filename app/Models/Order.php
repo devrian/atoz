@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon $expired_at
  * @property string|null $deleted_at
  *
  * @property User $user
@@ -47,13 +48,18 @@ class Order extends Model
         'amount' => 'float'
 	];
 
+    protected $dates = [
+		'expired_at'
+	];
+
 	protected $fillable = [
 		'order_no',
 		'transaction_id',
         'amount',
 		'model_type',
 		'order_status',
-		'created_by'
+		'created_by',
+        'expired_at'
 	];
 
 	public function user()

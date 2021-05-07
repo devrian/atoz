@@ -95,7 +95,7 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
-            $store = $this->orderService->storingCancelOrder($request);
+            $store = $this->orderService->storingCancelOrder($request->order_id, $request->user_id);
             if (is_null($store)) redirect()->back()->withInput()->withErrors('Something when wrong!');
 
             DB::commit();

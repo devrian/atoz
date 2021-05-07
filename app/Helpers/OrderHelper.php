@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\PrepaidBalance;
 use App\Repositories\OrderRepository;
 use App\Repositories\ProductRepository;
+use Carbon\Carbon;
 
 class OrderHelper
 {
@@ -31,6 +32,7 @@ class OrderHelper
     public function mappingOrder($className, $transactionId, $amount)
     {
         $orderNo = $this->generateOrderNumber();
+        $expiredAt = Carbon::now()->addMinute(5);
         $amountOrder = $className == PrepaidBalance::class
             ? ($amount * 0.05) + $amount
             : $amount + 10000;
@@ -40,7 +42,8 @@ class OrderHelper
             'model_type' => $className,
             'transaction_id' => $transactionId,
             'amount' => $amountOrder,
-            'order_status' => Order::STATUS_NEW
+            'order_status' => Order::STATUS_NEW,
+            'expired_at' => Carbon::parse($expiredAt)
         ];
     }
 

@@ -18,7 +18,6 @@
 
             @include('components.alert-error')
 
-
             <div class="card">
                 <div class="card-box">
                     <div class="m-3">

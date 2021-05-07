@@ -10,6 +10,8 @@
 
             @include('components.alert-info')
 
+            @include('components.alert-error')
+
             <h3 class="text-center">
                 Welcome To Atoz<br/>
                 Happy Fun {{ Auth::user()->name }}
