@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Requests\CancelOrderRequest;
 use App\Http\Requests\PaymentOrderRequest;
 use App\Interfaces\OrderInterface;
 use App\Interfaces\PrepaidBalanceInterface;
@@ -72,10 +71,12 @@ class OrderService {
             if (is_null($productUpdated)) abort(400, 'Update product failed.');
         }
 
+        $orderStatus = app('order.helper')->getStatusOrderCondition($orderUpdated->model_type);
+
         $requestPayment = [
             'id' => $orderUpdated->order_id,
             'user_id' => $request->user_id,
-            'order_status' => Order::STATUS_SUCCESS
+            'order_status' => $orderStatus
         ];
 
         $paymentOrder = $this->orderInterface->update($requestPayment);

@@ -57,4 +57,15 @@ class OrderHelper
 
         return $result;
     }
+
+    public function getStatusOrderCondition($modelType)
+    {
+        if ($modelType == PrepaidBalance::class) {
+            $startTime = Carbon::createFromTimeString('09:00');
+            $endTime = Carbon::createFromTimeString('17:00');
+            if (!Carbon::now()->between($startTime, $endTime)) return Order::STATUS_FAIL;
+        }
+
+        return Order::STATUS_SUCCESS;
+    }
 }
